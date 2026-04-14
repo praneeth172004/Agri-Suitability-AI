@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h2 class="text-center mb-4">Register</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <!-- Role Selection -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Register as</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check form-check-inline flex-fill">
+                            <input class="form-check-input" type="radio" name="role" id="role_farmer" value="farmer" checked>
+                            <label class="form-check-label d-flex align-items-center gap-2" for="role_farmer">
+                                <span class="badge bg-success p-2"><i class="bi bi-tree"></i></span>
+                                <div>
+                                    <strong>Farmer</strong>
+                                    <small class="d-block text-muted">Make predictions, view dashboard</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline flex-fill">
+                            <input class="form-check-input" type="radio" name="role" id="role_admin" value="admin">
+                            <label class="form-check-label d-flex align-items-center gap-2" for="role_admin">
+                                <span class="badge bg-primary p-2"><i class="bi bi-shield-lock"></i></span>
+                                <div>
+                                    <strong>Admin</strong>
+                                    <small class="d-block text-muted">Train models, manage system</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <!-- Note: 'password' and 'cnfm_password' names match views.py -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="cnfm_password" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="cnfm_password" name="cnfm_password" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+            <p class="mt-3 text-center">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg mt-5 border-0">
+            <div class="card-header bg-success text-white text-center py-4">
+                <h2 class="mb-0 fw-bold">Crop Encyclopedia</h2>
+                <p class="mb-0 mt-2 text-white-50">Discover optimal conditions for your crops</p>
+            </div>
+            <div class="card-body p-5">
+                <form method="GET" action="{% url 'crop_search' %}" class="d-flex mb-5">
+                    <input class="form-control form-control-lg me-2" type="search" name="query"
+                        placeholder="Enter crop name (e.g. Rice, Wheat)..." value="{{ query|default:'' }}"
+                        aria-label="Search">
+                    <button class="btn btn-lg btn-primary" type="submit">Search</button>
+                    {% if query %}
+                    <a href="{% url 'crop_search' %}" class="btn btn-lg btn-outline-secondary ms-2">Clear</a>
+                    {% endif %}
+                </form>
+
+                {% if result %}
+                <div class="card border-success mb-3 animation-fade-in">
+                    <div class="card-header bg-transparent border-success">
+                        <h3 class="text-success mb-0">{{ result.name }}</h3>
+                    </div>
+                    <div class="card-body text-success">
+                        <p class="lead text-dark">{{ result.description }}</p>
+                        <hr>
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-uppercase text-muted fw-bold small">Ideal Temperature</h6>
+                                <p class="fs-5"><i class="bi bi-thermometer-sun me-2"></i> {{ result.ideal_temp }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-uppercase text-muted fw-bold small">Rainfall Required</h6>
+                                <p class="fs-5"><i class="bi bi-cloud-rain me-2"></i> {{ result.ideal_rainfall }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-uppercase text-muted fw-bold small">Soil Type</h6>
+                                <p class="fs-5"><i class="bi bi-layers me-2"></i> {{ result.soil_type }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-uppercase text-muted fw-bold small">Growing Season</h6>
+                                <p class="fs-5"><i class="bi bi-calendar-event me-2"></i> {{ result.growing_season }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif query %}
+                <div class="alert alert-warning text-center" role="alert">
+                    <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Not Found</h4>
+                    <p>Sorry, we couldn't find details for "<strong>{{ query }}</strong>".</p>
+                    <hr>
+                    <p class="mb-0">Try searching for common crops like Rice, Wheat, Corn, or Cotton.</p>
+                </div>
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-link text-decoration-none">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animation-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

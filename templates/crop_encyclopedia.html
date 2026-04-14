@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 text-center mb-5">
+        <h1 class="display-4 text-success fw-bold">🌾 Crop Encyclopedia</h1>
+        <p class="lead text-muted">A comprehensive guide to major crops grouped for easy reference.</p>
+        <a href="{% url 'crop_search' %}" class="btn btn-outline-success">Search Specific Crop Details</a>
+    </div>
+</div>
+
+<div class="row">
+    {% for category in encyclopedia %}
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title mb-0">{{ category.category }}</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if category.subcategories %}
+                {% for sub in category.subcategories %}
+                <div class="p-3 bg-light border-bottom">
+                    <h5 class="text-success mb-0 fw-bold">
+                        {% if sub.icon %}{{ sub.icon }} {% endif %}
+                        {{ sub.name }}
+                    </h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 15%;">Crop Name</th>
+                                <th style="width: 25%;">Description</th>
+                                <th style="width: 15%;">Season</th>
+                                <th style="width: 20%;">Climate (Temp/Rain)</th>
+                                <th style="width: 25%;">Soil Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crop in sub.crops %}
+                            <tr>
+                                <td class="fw-bold text-success">{{ crop.name }}</td>
+                                <td>{{ crop.description }}</td>
+                                <td><span class="badge bg-warning text-dark">{{ crop.growing_season }}</span></td>
+                                <td>
+                                    <small class="d-block"><strong>Temp:</strong> {{ crop.ideal_temp }}</small>
+                                    <small class="d-block"><strong>Rain:</strong> {{ crop.ideal_rainfall }}</small>
+                                    {% if crop.climate != 'N/A' %}
+                                    <small class="d-block text-muted">({{ crop.climate }})</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ crop.soil_type }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 15%;">Crop Name</th>
+                                <th style="width: 25%;">Description</th>
+                                <th style="width: 15%;">Season</th>
+                                <th style="width: 20%;">Climate (Temp/Rain)</th>
+                                <th style="width: 25%;">Soil Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crop in category.crops %}
+                            <tr>
+                                <td class="fw-bold text-success">{{ crop.name }}</td>
+                                <td>{{ crop.description }}</td>
+                                <td><span class="badge bg-warning text-dark">{{ crop.growing_season }}</span></td>
+                                <td>
+                                    <small class="d-block"><strong>Temp:</strong> {{ crop.ideal_temp }}</small>
+                                    <small class="d-block"><strong>Rain:</strong> {{ crop.ideal_rainfall }}</small>
+                                    {% if crop.climate != 'N/A' %}
+                                    <small class="d-block text-muted">({{ crop.climate }})</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ crop.soil_type }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4"><i class="bi bi-currency-rupee"></i> Market Prices & ROI Calculator</h2>
+        </div>
+    </div>
+
+    <!-- ROI Calculator -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-calculator"></i> ROI Calculator</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Select Crop</label>
+                                <select name="crop" class="form-select" required>
+                                    <option value="">Choose a crop...</option>
+                                    {% for price in prices %}
+                                    <option value="{{ price.crop }}">{{ price.crop }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Land Area (Hectares)</label>
+                                <input type="number" name="area" class="form-control" step="0.1" value="1" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success w-100">Calculate ROI</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if roi_result %}
+                    <hr>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5 class="text-success"><i class="bi bi-check-circle"></i> ROI Analysis for {{
+                                roi_result.crop }}</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <small class="text-muted">Estimated Yield</small>
+                                    <h4>{{ roi_result.estimated_yield }} quintals</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <small class="text-muted">Total Revenue</small>
+                                    <h4>₹{{ roi_result.revenue|floatformat:0 }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <small class="text-muted">Total Cost</small>
+                                    <h4>₹{{ roi_result.total_cost|floatformat:0 }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div
+                                class="card {% if roi_result.profit > 0 %}bg-success{% else %}bg-danger{% endif %} text-white">
+                                <div class="card-body text-center">
+                                    <small>Net Profit</small>
+                                    <h4>₹{{ roi_result.profit|floatformat:0 }}</h4>
+                                    <small>ROI: {{ roi_result.roi_percentage }}%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Market Prices -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-graph-up-arrow"></i> Current Market Prices</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Market</th>
+                                    <th>Price (per Quintal)</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for price in prices %}
+                                <tr>
+                                    <td><strong>{{ price.crop }}</strong></td>
+                                    <td>{{ price.market }}</td>
+                                    <td class="text-success"><strong>₹{{ price.price }}</strong></td>
+                                    <td>{{ price.date|date:"M d, Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

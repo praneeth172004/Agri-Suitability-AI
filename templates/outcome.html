@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center text-center">
+    <div class="col-md-6">
+        <div class="card p-5 mt-5">
+            <h2 class="text-success mb-4">Prediction Result</h2>
+            <h4 class="mb-3">The predicted land suitability is:</h4>
+            <div class="display-3 fw-bold text-primary mb-4">
+                {{ outcome }}
+            </div>
+
+            {% if suggested_crops %}
+            <div class="mt-4 mb-4">
+                <h4 class="text-info">Suggested Crops:</h4>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    {% for crop in suggested_crops %}
+                    <span class="badge bg-success fs-5">{{ crop }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% elif outcome != "Unsuitable" %}
+            <div class="mt-4 mb-4">
+                <h4 class="text-muted">No specific crop suggestions found for these conditions.</h4>
+            </div>
+            {% endif %}
+            <!-- Advanced Analytics Dashboard -->
+            <div class="card mt-4 mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Analytics Dashboard</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <canvas id="suitabilityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <a href="{% url 'download_report' %}" class="btn btn-lg btn-warning text-dark fw-bold shadow">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> Download Professional Report
+                </a>
+            </div>
+
+            <div>
+                <a href="{% url 'prediction' %}" class="btn btn-outline-secondary">Make Another Prediction</a>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary ms-2">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('suitabilityChart').getContext('2d');
+
+        // Extract values from django template
+        const soil = parseFloat("{{ input_data.Soil_Quality_Index|default:0 }}") * 100;
+        const water = parseFloat("{{ input_data.Water_Availability_Index|default:0 }}") * 100;
+        const rainRaw = parseFloat("{{ input_data.Annual_Rainfall_mm|default:0 }}");
+        const rain = (rainRaw / 3000) * 100;
+        const tempRaw = parseFloat("{{ input_data.Temperature_C|default:0 }}");
+        const temp = (tempRaw / 50) * 100;
+
+        const irrigationMap = { 'High': 90, 'Medium': 60, 'Low': 30 };
+        const irrigVal = "{{ input_data.Irrigation_Level|default:'Low' }}";
+        const irrigation = irrigationMap[irrigVal] || 30;
+
+        // Create gradient
+        const gradient = ctx.createRadialGradient(200, 200, 0, 200, 200, 200);
+        gradient.addColorStop(0, 'rgba(40, 167, 69, 0.4)');
+        gradient.addColorStop(1, 'rgba(40, 167, 69, 0.05)');
+
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Soil Quality',
+                    'Water Availability',
+                    'Rainfall Suitability',
+                    'Temperature Optimal',
+                    'Irrigation Access'
+                ],
+                datasets: [{
+                    label: 'Land Assessment Score',
+                    data: [soil, water, rain, temp, irrigation],
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: 'rgb(40, 167, 69)',
+                    pointBackgroundColor: 'rgb(40, 167, 69)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(40, 167, 69)',
+                    pointRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0,0,0,0.1)' },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        pointLabels: {
+                            font: { size: 14, weight: 'bold' },
+                            color: '#333'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: { backdropColor: 'transparent' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    });
+</script>
+</div>
+</div>
+</div>
+{% endblock %}

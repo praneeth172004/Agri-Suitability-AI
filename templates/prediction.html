@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <!-- Interactive Region Selector -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-map"></i> Select Your Region (Reference Guide)</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">Click a region to see typical climate values for that area</p>
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <div class="region-card" onclick="selectRegion('Andhra Pradesh')" id="region-ap">
+                            <div class="region-icon">
+                                <i class="bi bi-geo-alt-fill" style="font-size: 3rem; color: #27ae60;"></i>
+                            </div>
+                            <h5>Andhra Pradesh</h5>
+                            <p class="text-muted">Coastal & Delta Region</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="region-card" onclick="selectRegion('Telangana')" id="region-tg">
+                            <div class="region-icon">
+                                <i class="bi bi-geo-alt-fill" style="font-size: 3rem; color: #3498db;"></i>
+                            </div>
+                            <h5>Telangana</h5>
+                            <p class="text-muted">Deccan Plateau</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="region-card" onclick="selectRegion('India')" id="region-india">
+                            <div class="region-icon">
+                                <i class="bi bi-geo-alt-fill" style="font-size: 3rem; color: #e74c3c;"></i>
+                            </div>
+                            <h5>India</h5>
+                            <p class="text-muted">National Average</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h2 class="text-center mb-4">Agricultural Land Suitability Prediction</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form_fields %}
+                <div class="mb-3">
+                    <label for="{{ field.key }}" class="form-label">{{ field.label }}</label>
+                    {% if field.choices %}
+                    <select class="form-select" id="{{ field.key }}" name="{{ field.key }}" required>
+                        <option value="" selected disabled>Select {{ field.label }}</option>
+                        {% for choice in field.choices %}
+                        <option value="{{ choice }}">{{ choice }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <!-- Numerical Inputs -->
+                    <input type="number" step="any" class="form-control" id="{{ field.key }}" name="{{ field.key }}"
+                        required>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">Predict Suitability</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .region-card {
+        padding: 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .region-card:hover {
+        border-color: #27ae60;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+
+    .region-card.selected {
+        border-color: #27ae60;
+        background: #e8f5e9;
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+</style>
+
+<script>
+    let selectedRegion = null;
+
+    function selectRegion(regionName) {
+        // Remove selected class from all cards
+        document.querySelectorAll('.region-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Add selected class to clicked card
+        let cardId;
+        if (regionName === 'Andhra Pradesh') cardId = 'region-ap';
+        else if (regionName === 'Telangana') cardId = 'region-tg';
+        else cardId = 'region-india';
+
+        const selectedCard = document.getElementById(cardId);
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+        }
+
+        // Store selected region
+        selectedRegion = regionName;
+
+        // Show confirmation with region-specific guidance
+        const regionData = {
+            'Andhra Pradesh': {
+                rainfall: '900-1200',
+                temp: '25-35',
+                soil: 'Coastal alluvial'
+            },
+            'Telangana': {
+                rainfall: '600-900',
+                temp: '20-30',
+                soil: 'Red & Black'
+            },
+            'India': {
+                rainfall: '800-1000',
+                temp: '22-32',
+                soil: 'Mixed'
+            }
+        };
+
+        const data = regionData[regionName];
+
+        // Show notification with guidance
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        notification.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 350px;';
+        notification.innerHTML = `
+        <strong><i class="bi bi-check-circle"></i> ${regionName} Selected!</strong>
+        <hr>
+        <small>
+            <strong>Typical Values:</strong><br>
+            🌧️ Rainfall: ${data.rainfall} mm<br>
+            🌡️ Temperature: ${data.temp}°C<br>
+            🌱 Soil: ${data.soil}
+        </small>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+        document.body.appendChild(notification);
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+
+        // Scroll to form
+        setTimeout(() => {
+            document.querySelector('form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 500);
+    }
+</script>
+{% endblock %}

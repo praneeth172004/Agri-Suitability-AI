@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4"><i class="bi bi-speedometer2"></i> My Dashboard</h2>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-graph-up"></i> Total Predictions</h5>
+                    <h2>{{ total_predictions }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-check-circle"></i> Average Accuracy</h5>
+                    <h2>{{ avg_accuracy }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-geo-alt"></i> Land Parcels</h5>
+                    <h2>{{ land_parcels.count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Predictions -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-clock-history"></i> Recent Predictions</h5>
+                </div>
+                <div class="card-body">
+                    {% if predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Region</th>
+                                    <th>Temperature</th>
+                                    <th>Rainfall</th>
+                                    <th>Soil Type</th>
+                                    <th>Suitability</th>
+                                    <th>Model</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pred in predictions %}
+                                <tr>
+                                    <td>{{ pred.prediction_date|date:"M d, Y" }}</td>
+                                    <td>{{ pred.region }}</td>
+                                    <td>{{ pred.temperature }}°C</td>
+                                    <td>{{ pred.rainfall }} mm</td>
+                                    <td>{{ pred.soil_type }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if pred.predicted_suitability == 'Highly Suitable' %}bg-success
+                                            {% elif pred.predicted_suitability == 'Moderate' %}bg-warning
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ pred.predicted_suitability }}
+                                        </span>
+                                    </td>
+                                    <td>{{ pred.model_used }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No predictions yet. Make your first prediction to see it here!
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
