@@ -40,7 +40,6 @@ def register(request):
         username = request.POST['username']
         password = request.POST['password']
         confirmation_password = request.POST['cnfm_password']
-        role = request.POST.get('role', 'farmer')
         if password == confirmation_password:
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists, please choose a different one.')
@@ -56,18 +55,13 @@ def register(request):
                         email=Email,
                         first_name=First_Name,
                     )
-                    # Set staff status for admin role
-                    if role == 'admin':
-                        user.is_staff = True
-                        user.save()
                     
-                    # Update the user profile with the selected role
-                    # (profile is auto-created by the signal)
+                    # All registered users are farmers (admin is predefined)
                     profile = user.profile
-                    profile.role = role
+                    profile.role = 'farmer'
                     profile.save()
                     
-                    messages.success(request, f'Registration successful as {profile.get_role_display()}. Please login.')
+                    messages.success(request, 'Registration successful! Please login.')
                     return redirect('login')
         else:
             messages.error(request, 'Passwords do not match.')

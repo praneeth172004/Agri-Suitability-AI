@@ -7,33 +7,6 @@
             <h2 class="text-center mb-4">Register</h2>
             <form method="POST">
                 {% csrf_token %}
-                <!-- Role Selection -->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Register as</label>
-                    <div class="d-flex gap-3">
-                        <div class="form-check form-check-inline flex-fill">
-                            <input class="form-check-input" type="radio" name="role" id="role_farmer" value="farmer" checked>
-                            <label class="form-check-label d-flex align-items-center gap-2" for="role_farmer">
-                                <span class="badge bg-success p-2"><i class="bi bi-tree"></i></span>
-                                <div>
-                                    <strong>Farmer</strong>
-                                    <small class="d-block text-muted">Make predictions, view dashboard</small>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline flex-fill">
-                            <input class="form-check-input" type="radio" name="role" id="role_admin" value="admin">
-                            <label class="form-check-label d-flex align-items-center gap-2" for="role_admin">
-                                <span class="badge bg-primary p-2"><i class="bi bi-shield-lock"></i></span>
-                                <div>
-                                    <strong>Admin</strong>
-                                    <small class="d-block text-muted">Train models, manage system</small>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <hr>
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>
