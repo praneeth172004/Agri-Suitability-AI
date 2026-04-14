@@ -378,27 +378,17 @@ def get_crop_suggestions(suitability, rainfall, temperature):
         return []
 
     suggestions = []
-    # Crop requirements (approximate values for demonstration)
-    # Rainfall in mm, Temperature in Celsius
-    crops = [
-        {"name": "Rice", "min_rain": 1000, "max_rain": 3000, "min_temp": 20, "max_temp": 35, "suitability": ["Highly Suitable", "Moderate"]},
-        {"name": "Wheat", "min_rain": 400, "max_rain": 1000, "min_temp": 10, "max_temp": 25, "suitability": ["Highly Suitable", "Moderate"]},
-        {"name": "Corn (Maize)", "min_rain": 500, "max_rain": 1500, "min_temp": 18, "max_temp": 30, "suitability": ["Highly Suitable", "Moderate"]},
-        {"name": "Barley", "min_rain": 300, "max_rain": 1000, "min_temp": 10, "max_temp": 25, "suitability": ["Highly Suitable", "Moderate"]},
-        {"name": "Soybean", "min_rain": 500, "max_rain": 1500, "min_temp": 20, "max_temp": 35, "suitability": ["Highly Suitable"]},
-        {"name": "Cotton", "min_rain": 500, "max_rain": 1200, "min_temp": 25, "max_temp": 35, "suitability": ["Highly Suitable"]},
-        {"name": "Sorghum", "min_rain": 400, "max_rain": 1000, "min_temp": 25, "max_temp": 35, "suitability": ["Highly Suitable", "Moderate"]},
-    ]
-
-    for crop in crops:
-        if (crop["min_rain"] <= rainfall <= crop["max_rain"] and
-            crop["min_temp"] <= temperature <= crop["max_temp"] and
-            suitability in crop["suitability"]):
-            suggestions.append(crop["name"])
+    
+    # Iterate over the expanded crop database in utils.py
+    for crop_name, params in CROP_SUGGESTION_PARAMS.items():
+        if (params["min_rain"] <= rainfall <= params["max_rain"] and
+            params["min_temp"] <= temperature <= params["max_temp"] and
+            suitability in params["suitability"]):
+            suggestions.append(crop_name)
             
     return suggestions
 
-from .utils import CROP_DETAILS, CROP_ENCYCLOPEDIA
+from .utils import CROP_DETAILS, CROP_ENCYCLOPEDIA, CROP_SUGGESTION_PARAMS
 
 def crop_search(request):
     query = request.GET.get('query')
